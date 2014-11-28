@@ -16,9 +16,10 @@ import org.apache.maven.scm.provider.hg.command.HgConsumer;
 import org.codehaus.plexus.util.StringUtils;
 
 import java.io.File;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  *
@@ -54,17 +55,21 @@ public class MercurialVersionPluginMojo extends AbstractMojo {
         try {
             String branch = getBranch();
             String changeSet = getChangeSet();
-            String date = getTimestamp();
-            long unixDate = Long.parseLong(date.split("\\.")[0]);
-            Instant instant = Instant.ofEpochSecond(unixDate);
-            ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.of(timezone));
+            String timestamp = getTimestamp();
+            String date = getFormattedDate(timestamp);
+
             String version = (includeBaseName ? baseName + "-" : "")
                     + projectVersion + "-"
                     + branch + "-"
-                    + zdt + "-"
+                    + timestamp + "-"
                     + changeSet;
             getLog().info("Version: " + version);
-            project.getProperties().setProperty("version.finalVersion", version);
+            project.getProperties().setProperty("scm-version.finalVersion", version);
+            project.getProperties().setProperty("scm-version.branch", branch);
+            project.getProperties().setProperty("scm-version.changeSet", changeSet);
+            project.getProperties().setProperty("scm-version.datetime", date);
+            project.getProperties().setProperty("scm-version.timestamp", timestamp);
+
         } catch (ScmException e) {
             throw new MojoExecutionException("SCMException: " + e.getMessage(), e);
         }
@@ -101,6 +106,16 @@ public class MercurialVersionPluginMojo extends AbstractMojo {
             throw new MojoExecutionException("Command failed."
                     + StringUtils.defaultString(result.getProviderMessage()));
         }
+    }
+
+    private String getFormattedDate(String timestamp) throws ScmException, MojoExecutionException {
+        long unixDate = Long.parseLong(timestamp.split("\\.")[0]);
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        dateFormat.setTimeZone(TimeZone.getTimeZone(timezone));
+        return dateFormat.format(new Date(unixDate * 1000));
+        //Avoid using java 8 constructs.
+        //Instant instant = Instant.ofEpochSecond(unixDate);
+        //ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.of(timezone));
     }
 
     private static class HgOutputConsumer

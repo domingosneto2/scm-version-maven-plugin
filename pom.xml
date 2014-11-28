@@ -15,6 +15,9 @@
         <maven.compiler.source>1.5</maven.compiler.source>
         <maven.compiler.target>1.5</maven.compiler.target>
         <mojo.java.target>1.5</mojo.java.target>
+
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.target>1.6</maven.compiler.target>
     </properties>
 
     <dependencies>
@@ -52,7 +55,7 @@
                 <artifactId>maven-invoker-plugin</artifactId>
                 <version>1.9</version>
                 <configuration>
-                    <debug>true</debug>
+                    <debug>false</debug>
                     <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
                     <settingsFile>src/it/settings.xml</settingsFile>
                     <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>

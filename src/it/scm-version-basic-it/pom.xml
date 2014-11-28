@@ -44,8 +44,15 @@
                 <version>2.3.2</version>
                 <configuration>
                     <archive>
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
                         <manifestEntries>
-                            <implementationVersion>${version.finalVersion}</implementationVersion>
+                            <finalVersion>${scm-version.finalVersion}</finalVersion>
+                            <branch>${scm-version.branch}</branch>
+                            <changeSet>${scm-version.changeSet}</changeSet>
+                            <timestamp>${scm-version.timestamp}</timestamp>
+                            <dateTime>${scm-version.datetime}</dateTime>
                         </manifestEntries>
                     </archive>
                 </configuration>
