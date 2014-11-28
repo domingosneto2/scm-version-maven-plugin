@@ -1,0 +1,17 @@
+import java.io.File;
+
+    File dothg = new File( basedir, "dothg" );
+    if (!dothg.exists()) {
+        System.err.println("File " + file + " does not exist.");
+        return false;
+    }
+    if (!dothg.isDirectory()) {
+        System.err.println("File " + file + " is not a directory.");
+        return false;
+    }
+    File newName = new File(basedir, ".hg");
+    System.err.println("Attempting to rename " + dothg + " to " + newName);
+    return dothg.renameTo(newName);
+
+
+

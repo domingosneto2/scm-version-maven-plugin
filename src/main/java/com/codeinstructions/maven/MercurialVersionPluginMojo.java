@@ -28,7 +28,7 @@ public class MercurialVersionPluginMojo extends AbstractMojo {
     @Parameter(property = "version.base", defaultValue = "${project.name}")
     private String baseName;
 
-    @Parameter(property = "version.version", defaultValue = "${project.version}")
+    @Parameter(property = "version.versionNumber", defaultValue = "${project.version}")
     private String projectVersion;
 
     /**
@@ -45,6 +45,9 @@ public class MercurialVersionPluginMojo extends AbstractMojo {
     @Parameter(property = "version.timezone", defaultValue = "GMT")
     private String timezone;
 
+    @Parameter(property = "version.includeBaseName", defaultValue = "false")
+    private boolean includeBaseName;
+
     private ScmLogDispatcher logger = new ScmLogDispatcher();
 
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -52,14 +55,16 @@ public class MercurialVersionPluginMojo extends AbstractMojo {
             String branch = getBranch();
             String changeSet = getChangeSet();
             String date = getTimestamp();
-            getLog().info("Date: " + date);
             long unixDate = Long.parseLong(date.split("\\.")[0]);
             Instant instant = Instant.ofEpochSecond(unixDate);
-            getLog().info("Instant: " + instant);
             ZonedDateTime zdt = ZonedDateTime.ofInstant(instant, ZoneId.of(timezone));
-            String version = baseName + "-" + projectVersion + "-" + branch + "-" + zdt + "-" + changeSet;
+            String version = (includeBaseName ? baseName + "-" : "")
+                    + projectVersion + "-"
+                    + branch + "-"
+                    + zdt + "-"
+                    + changeSet;
             getLog().info("Version: " + version);
-            project.getProperties().setProperty("version.version", version);
+            project.getProperties().setProperty("version.finalVersion", version);
         } catch (ScmException e) {
             throw new MojoExecutionException("SCMException: " + e.getMessage(), e);
         }
